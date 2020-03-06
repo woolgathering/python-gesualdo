@@ -1,9 +1,0 @@
-setup.py
-gesualdo/__init__.py
-gesualdo.egg-info/PKG-INFO
-gesualdo.egg-info/SOURCES.txt
-gesualdo.egg-info/dependency_links.txt
-gesualdo.egg-info/top_level.txt
-gesualdo/core/Interval.py
-gesualdo/core/Note.py
-gesualdo/core/__init__.py
