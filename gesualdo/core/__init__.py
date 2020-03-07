@@ -16,3 +16,4 @@ from __future__ import absolute_import
 
 from gesualdo.core.Note import Note
 from gesualdo.core.Interval import Interval
+from gesualdo.core.Key import Key

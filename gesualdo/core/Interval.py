@@ -2,7 +2,7 @@
 Intervals
 """
 
-from gesualdo.core import Note
+from gesualdo.core.Note import Note
 
 class Interval:
 
@@ -24,7 +24,9 @@ class Interval:
     'major': 0,
     'minor': -1,
     'diminished': -2,
-    'augmented': 1
+    'doubly diminished': -3,
+    'augmented': 1,
+    'doubly augmented': 2
   }
 
   note_names_as_numbers = {'C': 0, 'D': 1, 'E': 2, 'F': 3, 'G': 4, 'A': 5, 'B': 6}
@@ -54,9 +56,9 @@ class Interval:
     elif not isinstance(starting_pitch, Note):
       raise Exception('Pitch is neither a viable string, integer, or Note!')
 
+
     # check ending_pitch and make it a note
     if isinstance(ending_pitch, str):
-      # it's a string so make a note
       ending_pitch = Note(ending_pitch)
     elif isinstance(ending_pitch, int):
       ending_pitch = Note.new_from_number(ending_pitch)
@@ -68,16 +70,18 @@ class Interval:
     self.semitones = abs(starting_pitch.num-ending_pitch.num)
     self._name = self._find_name(starting_pitch, ending_pitch)
 
+  def __repr__(self):
+    return ('Interval({}->{}, \'{}\')'.format(self.starting_pitch, self.ending_pitch, self._name))
 
   def _find_name(self, starting_pitch, ending_pitch):
     names = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
     notes = [starting_pitch, ending_pitch]
-    notes.sort(key=lambda x: x.num)
-    idx_of_start = names.index(notes[0].str[0])
+    notes.sort(key=lambda x: x.num) # sort it
+    idx_of_start = names.index(notes[0].str[0]) # get the starting index in note names
     size = 0
     while names[idx_of_start] != notes[1].str[0]:
-      idx_of_start = (idx_of_start+1) % 7
-      size += 1
+      idx_of_start = (idx_of_start+1) % 7 # increment by 1, modulo 7
+      size += 1 # add 1 to the size
 
     if size==0:
       if notes[0].octave==notes[1].octave:
@@ -105,8 +109,12 @@ class Interval:
     if name in ['octave', 'unison', 'fifth', 'fourth']:
       if quality is -1:
         quality = 'diminished'
+      elif quality is -2:
+        quality = 'doubly diminished'
       elif quality is 1:
         quality = 'augmented'
+      elif quality is 2:
+        quality = 'doubly augmented'
       else:
         quality = 'perfect'
     else:

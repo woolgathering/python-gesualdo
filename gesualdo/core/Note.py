@@ -29,25 +29,41 @@ class Note:
     'Ax': 11,'B': 11,'Cb': 11,
   }
 
-  def __init__(self, pitch='A4'):
-    # nameOct = self.check_pitch(pitch)
+  def __init__(self, pitch='A4', duration=None):
     self._str, self._octave = self.check_pitch(pitch)
-    self._num = self.get_number()
-    self._enharmonic_equivalents = self.get_enharmonic_equivalents() # a list of enharmonic equivalents
+    self._num = self.get_number(self._str)
+    self._enharmonic_equivalents = self.get_enharmonic_equivalents(self._str) # a list of enharmonic equivalents
+    self._duration = duration
+
+  @classmethod
+  def from_number(self, number=60, duration=None):
+    octave = int(number/12) - 1
+    number = number % 12
+    note = [name for name, steps in self.enharmonic_name_steps.items() if steps==number]
+    note = note[1]+'{}'.format(octave)
+    return Note(note, duration)
 
   def __repr__(self):
     return ('Note(\'{}{}\')'.format(self._str, self._octave))
 
-  def get_number(self):
-    st = self.get_steps() # need to get enharmonic equivalents here
+  def __add__(self, steps):
+    num = self.num + steps
+    return Note.from_number(num, self.duration)
+
+  def __sub__(self, steps):
+    num = self.num - steps
+    return Note.from_number(num, self.duration)
+
+  def get_number(self, name):
+    st = self.get_steps(name) # need to get enharmonic equivalents here
     return ((self._octave+1)*12)+st
 
   # @private
-  def get_steps(self):
-    return self.enharmonic_name_steps[self._str]
+  def get_steps(self, name):
+    return self.enharmonic_name_steps[name]
 
-  def get_enharmonic_equivalents(self):
-    st = self.get_steps()
+  def get_enharmonic_equivalents(self, name):
+    st = self.get_steps(name)
     return [name for name, steps in self.enharmonic_name_steps.items() if steps==st]
 
   def hz(self):
@@ -92,3 +108,10 @@ class Note:
   @property
   def enharmonic_equivalents(self):
     return self._enharmonic_equivalents
+
+  @property
+  def duration(self):
+    return self._duration
+  @duration.setter
+  def duration(self, duration):
+    self._duration = duration
